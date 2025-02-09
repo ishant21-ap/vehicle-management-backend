@@ -17,9 +17,9 @@ public class ShopkeeperController {
 
 
     @PostMapping("/register")
-    public ResponseEntity<ShopkeeperDto> registerShopkeeper(@RequestBody ShopkeeperDto shopkeeperDto) {
-        ShopkeeperDto shopkeeper = shopkeeperService.registerShopkeeper(shopkeeperDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(shopkeeper);
+    public ResponseEntity<String> registerShopkeeper(@RequestBody ShopkeeperDto shopkeeperDto) {
+        shopkeeperService.registerShopkeeper(shopkeeperDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Shopkeeper Registered Successfully !!");
     }
 
 

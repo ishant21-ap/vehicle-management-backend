@@ -16,9 +16,9 @@ public class UserController {
 
     // Register a new user
     @PostMapping("/register")
-    public ResponseEntity<UserDto> registerUser(@RequestBody UserDto userDto) {
-        UserDto createdUser = userService.registerUser(userDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser); // Return 201 CREATED
+    public ResponseEntity<String> registerUser(@RequestBody UserDto userDto) {
+        userService.registerUser(userDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body("User Registered Succssesfully !"); // Return 201 CREATED
     }
 
     // Verify OTP
