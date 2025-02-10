@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Data
@@ -37,6 +38,20 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Status status;
 
+    // New common fields
+    private LocalDate dob;
+    private String profileImageUrl;
+    private String gender;  // Example values: "Male", "Female", "Other"
+    private LocalDateTime lastLogin;
+    private boolean isLocked = false; // Default to false
+    private boolean isVerified = false; // Default to false
+
+    // Only for shopkeepers
+    private String shopName;
+    private String gstNumber;
+    private String shopAddress;
+    private String businessType; // Example values: "Retail", "Wholesale"
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -53,6 +68,4 @@ public class User {
     public void preUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
-
-
 }

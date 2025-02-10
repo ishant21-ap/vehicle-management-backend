@@ -6,7 +6,7 @@ import com.example.vehicle_management_system.backend.payloads.UserDto;
 
 public interface UserService {
 
-    UserDto registerUser(UserDto userDto);
+    String registerUser(UserDto userDto);
     UserDto getUserByEmail(String email);
     UserDto updateUser(Long id, UserDto userDto);
     boolean verfiyOtp(String email, String otp);

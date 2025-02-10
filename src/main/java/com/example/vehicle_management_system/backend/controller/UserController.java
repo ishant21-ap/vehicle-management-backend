@@ -2,6 +2,7 @@ package com.example.vehicle_management_system.backend.controller;
 
 import com.example.vehicle_management_system.backend.payloads.UserDto;
 import com.example.vehicle_management_system.backend.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +17,7 @@ public class UserController {
 
     // Register a new user
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody UserDto userDto) {
+    public ResponseEntity<String> registerUser(@Valid @RequestBody UserDto userDto) {
         userService.registerUser(userDto);
         return ResponseEntity.status(HttpStatus.CREATED).body("User Registered Succssesfully !"); // Return 201 CREATED
     }

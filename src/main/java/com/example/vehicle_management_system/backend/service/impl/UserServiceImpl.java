@@ -11,6 +11,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -25,15 +27,28 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public UserDto registerUser(UserDto userDto) {
-        User user = modelMapper.map(userDto, User.class);
-        user.setRole(Role.USER);
-        user.setStatus(Status.INACTIVE);
-        userRepository.save(user);    //saving user with inactive status
+    public String registerUser(UserDto userDto) {
 
+        if(userRepository.existsByEmail(userDto.getEmail())){
+            return "Email already in use !";
+        }
+
+        User user = modelMapper.map(userDto, User.class);
+        user.setRole(Role.valueOf(userDto.getRole()));
+        user.setStatus(Status.INACTIVE);
+        user.setLocked(false);
+        user.setVerified(false);
+
+        if(Role.SHOPKEEPER.name().equals(userDto.getRole())){
+            user.setShopName(userDto.getShopName());
+            user.setGstNumber(userDto.getGstNumber());
+        }
+        user.setLastLogin(LocalDateTime.now());
+        userRepository.save(user);
         otpService.generateOtp(userDto.getEmail());
-        return this.modelMapper.map(user, UserDto.class);
+        return "Registration Successful. OTP sent to you email!";
     }
+
 
     @Override
     public UserDto getUserByEmail(String email){
