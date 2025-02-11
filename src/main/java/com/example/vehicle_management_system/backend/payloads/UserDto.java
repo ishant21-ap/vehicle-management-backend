@@ -12,8 +12,7 @@ public class UserDto {
     private String address;
     private String role;
 
-    // New common fields
-    private String dob; // Keep it as a String for flexibility, convert to LocalDate in backend
+    private String dob;
     private String profileImageUrl;
     private String gender;
 

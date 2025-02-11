@@ -12,6 +12,7 @@ import com.example.vehicle_management_system.backend.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +31,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private OtpService otpService;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     public ApiResponse registerUser(UserDto userDto) {
         log.info("Attempting to register user with email: {}", userDto.getEmail());
@@ -40,6 +44,7 @@ public class UserServiceImpl implements UserService {
         }
 
         User user = modelMapper.map(userDto, User.class);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole(Role.valueOf(userDto.getRole().toUpperCase()));
         user.setStatus(Status.INACTIVE);
         user.setLocked(false);
@@ -67,6 +72,7 @@ public class UserServiceImpl implements UserService {
         return modelMapper.map(user, UserDto.class);
     }
 
+
     @Override
     @Transactional
     public UserDto updateUser(Long id, UserDto userDto) {
@@ -77,10 +83,12 @@ public class UserServiceImpl implements UserService {
         if (userDto.getRole() != null) user.setRole(Role.valueOf(userDto.getRole().toUpperCase()));
         if (userDto.getShopName() != null) user.setShopName(userDto.getShopName());
         if (userDto.getGstNumber() != null) user.setGstNumber(userDto.getGstNumber());
+        if (userDto.getPassword() != null) user.setPassword(passwordEncoder.encode(userDto.getPassword()));
 
         userRepository.save(user);
         return modelMapper.map(user, UserDto.class);
     }
+
 
     @Override
     public boolean verfiyOtp(String email, String otp) {
