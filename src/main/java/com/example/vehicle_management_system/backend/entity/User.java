@@ -80,6 +80,9 @@ public class User implements UserDetails {
     private String otp;
     private LocalDateTime otpExpirationTime;
 
+    @OneToMany(mappedBy = "shopkeeper", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Vehicle> vehicles;
+
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
