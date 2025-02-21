@@ -37,4 +37,7 @@ public class Vehicle {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shopkeeper_id", nullable = false)
     private User shopkeeper;
+
+    @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL)
+    private List<Booking> bookings; // Bookings associated with this vehicle
 }

@@ -83,6 +83,12 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "shopkeeper", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Vehicle> vehicles;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Booking> userBookings; // Bookings made by the user
+
+    @OneToMany(mappedBy = "shopkeeper", cascade = CascadeType.ALL)
+    private List<Booking> shopkeeperBookings; // Bookings handled by the shopkeeper
+
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
