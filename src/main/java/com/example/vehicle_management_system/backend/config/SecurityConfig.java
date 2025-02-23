@@ -47,7 +47,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/users/login",
                                 "/api/verify/**",
-                                "/api/users/register"
+                                "/api/users/register",
+                                "/api/users/verifyOtp"
                         ).permitAll()
                         .requestMatchers(HttpMethod.GET).permitAll() // Allow all GET requests
                         .anyRequest().authenticated() // All other requests require authentication

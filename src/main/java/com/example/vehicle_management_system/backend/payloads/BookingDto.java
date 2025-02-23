@@ -1,6 +1,7 @@
 package com.example.vehicle_management_system.backend.payloads;
 
 import com.example.vehicle_management_system.backend.entity.BookingStatus;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,7 +20,11 @@ public class BookingDto {
     private Long vehicleId;
     private Long shopkeeperId;
     private BookingStatus status;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate startDate;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate endDate;
     private Double totalPrice;
 

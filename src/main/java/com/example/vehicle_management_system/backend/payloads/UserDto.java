@@ -7,6 +7,7 @@ public class UserDto {
 
     private String name;
     private String email;
+    private String username;
     private String phone;
     private String password;
     private String address;
@@ -15,6 +16,7 @@ public class UserDto {
     private String dob;
     private String profileImageUrl;
     private String gender;
+
 
     // Only for shopkeeper
     private String shopName;

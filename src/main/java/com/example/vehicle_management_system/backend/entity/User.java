@@ -31,6 +31,8 @@ public class User implements UserDetails {
     @NotEmpty(message = "Name is required!")
     private String name;
 
+    private String username;
+
     @Column(nullable = false, unique = true)
     @Email(message = "Please enter a valid email address!")
     private String email;

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class BookingServiceImpl implements BookingService {
@@ -60,21 +61,31 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingDto> getUserBookings(Long userId) {
-        return List.of();
+        List<Booking> bookings = bookingRepository.findByUserId(userId);
+        return bookings.stream().map(b -> modelMapper.map(b, BookingDto.class)).collect(Collectors.toList());
     }
 
     @Override
     public List<BookingDto> getPendingBookingsForShopkeeper(Long shopkeeperId) {
-        return List.of();
+        List<Booking> bookings = bookingRepository.findByShopkeeperIdAndStatus(shopkeeperId, BookingStatus.PENDING);
+        return bookings.stream().map(b -> modelMapper.map(b, BookingDto.class)).collect(Collectors.toList());
     }
 
     @Override
     public BookingDto updateBookingStatus(Long bookingId, BookingStatus status, Long shopkeeperId) {
-        return null;
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+        if(!booking.getShopkeeper().getId().equals(shopkeeperId)) {
+            throw new RuntimeException("Unauthorized access to update this booking !");
+        }
+        booking.setStatus(status);
+        booking.setUpdatedAt(LocalDateTime.now());
+        bookingRepository.save(booking);
+        return modelMapper.map(booking, BookingDto.class);
     }
 
     @Override
     public BookingDto completeBooking(Long bookingId, Long shopkeeperId) {
-        return null;
+        return updateBookingStatus(bookingId, BookingStatus.COMPLETED, shopkeeperId);
     }
 }
