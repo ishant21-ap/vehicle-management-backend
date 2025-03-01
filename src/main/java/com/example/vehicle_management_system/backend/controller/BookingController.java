@@ -4,6 +4,7 @@ import com.example.vehicle_management_system.backend.entity.BookingStatus;
 import com.example.vehicle_management_system.backend.payloads.BookingDto;
 import com.example.vehicle_management_system.backend.service.BookingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +27,8 @@ public class BookingController {
             @RequestParam String startDate,
             @RequestParam String endDate) {
         BookingDto bookingDto = bookingService.createBooking(userId, vehicleId, LocalDate.parse(startDate), LocalDate.parse(endDate));
-        return ResponseEntity.ok(bookingDto);
+        return new ResponseEntity<>(bookingDto, HttpStatus.CREATED);
+
     }
 
     //Getting users booking history
@@ -44,17 +46,24 @@ public class BookingController {
 
     //Updating booking status (Coinfirm/Reject)
     @PutMapping("/{bookingId}/status")
-    public BookingDto updateBookingStatus(@PathVariable Long bookingId,
-                                          @RequestParam BookingStatus status,
+    public ResponseEntity<BookingDto> confirmBooking(@PathVariable Long bookingId,
                                           @RequestParam Long shopkeeperId) {
-        return bookingService.updateBookingStatus(bookingId, status, shopkeeperId);
+        return ResponseEntity.ok(bookingService.confirmBooking(bookingId, shopkeeperId));
     }
 
 
     @PutMapping("/{bookingId}/complete")
-    public BookingDto completeBooking(@PathVariable Long bookingId
+    public ResponseEntity<BookingDto> completeBooking(@PathVariable Long bookingId
     ,@RequestParam Long shopkeeperId) {
-        return bookingService.completeBooking(bookingId, shopkeeperId);
+        return ResponseEntity.ok(bookingService.completeBooking(bookingId, shopkeeperId));
+    }
+
+
+    @PostMapping("/cancel/{bookingId}/{userId}")
+    public ResponseEntity<BookingDto> cancelBooking(@PathVariable Long bookingId,
+                                                    @PathVariable Long userId) {
+        return new ResponseEntity<>(bookingService.cancelBooking(bookingId, userId), HttpStatus.OK);
+
     }
 
 

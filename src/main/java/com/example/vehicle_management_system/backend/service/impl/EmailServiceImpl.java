@@ -16,8 +16,31 @@ public class EmailServiceImpl implements EmailService {
     public void sendEmail(String to, String subject, String body) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
-        message.setSubject("Email Verification OTP");
-        message.setText("Your OTP for Email verification is: " + body);
+        message.setSubject(subject);
+        message.setText(body);
         mailSender.send(message);
+    }
+
+    //Method to send specific mail
+    @Override
+    public void sendPendingRequestEmail(String to) {
+        sendEmail(to, "Pending Request Notification",
+                "You have a new pending request. Please review it in your dashboard.");
+    }
+
+    @Override
+    public void sendConfirmationEmail(String to) {
+        sendEmail(to, "Booking Confirmation",
+                "Your booking has been successfully confirmed. Thank you for using our service!");
+    }
+
+    @Override
+    public void sendBookingCancellationEmail(String to, String role) {
+        String subject = "Booking Cancellation Notice";
+        String body = role.equals("SHOPKEEPER") ?
+                "A user has canceled a booking with your shop." :
+                "The shopkeeper has rejected your booking request.";
+
+        sendEmail(to, subject, body);
     }
 }

@@ -11,7 +11,8 @@ public interface BookingService {
     BookingDto createBooking(Long userId, Long vehicleId, LocalDate startDate, LocalDate endDate);
     List<BookingDto> getUserBookings(Long userId);
     List<BookingDto> getPendingBookingsForShopkeeper(Long shopkeeperId);
-    BookingDto updateBookingStatus(Long bookingId, BookingStatus status, Long shopkeeperId);
+    BookingDto confirmBooking(Long bookingId, Long shopkeeperId);
     BookingDto completeBooking(Long bookingId, Long shopkeeperId);
+    BookingDto cancelBooking(Long bookingId, Long userId);
 
 }

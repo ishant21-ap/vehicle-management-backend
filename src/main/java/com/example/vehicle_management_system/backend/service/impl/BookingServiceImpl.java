@@ -10,6 +10,7 @@ import com.example.vehicle_management_system.backend.repository.BookingRepositor
 import com.example.vehicle_management_system.backend.repository.UserRepository;
 import com.example.vehicle_management_system.backend.repository.VehicleRepository;
 import com.example.vehicle_management_system.backend.service.BookingService;
+import com.example.vehicle_management_system.backend.service.EmailService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,9 @@ public class BookingServiceImpl implements BookingService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private EmailService emailService;
 
     @Autowired
     private VehicleRepository vehicleRepository;
@@ -56,6 +60,7 @@ public class BookingServiceImpl implements BookingService {
                 .updatedAt(LocalDateTime.now())
                 .build();
         bookingRepository.save(booking);
+        emailService.sendPendingRequestEmail(shopkeeper.getEmail());
         return modelMapper.map(booking, BookingDto.class);
     }
 
@@ -72,20 +77,54 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingDto updateBookingStatus(Long bookingId, BookingStatus status, Long shopkeeperId) {
+    public BookingDto confirmBooking(Long bookingId, Long shopkeeperId) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new RuntimeException("Booking not found"));
         if(!booking.getShopkeeper().getId().equals(shopkeeperId)) {
             throw new RuntimeException("Unauthorized access to update this booking !");
         }
-        booking.setStatus(status);
+        booking.setStatus(BookingStatus.CONFIRMED);
+        booking.setUpdatedAt(LocalDateTime.now());
+        bookingRepository.save(booking);
+        emailService.sendConfirmationEmail(booking.getUser().getEmail());
+        return modelMapper.map(booking, BookingDto.class);
+    }
+
+    @Override
+    public BookingDto completeBooking(Long bookingId, Long shopkeeperId) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+        if(!booking.getShopkeeper().getId().equals(shopkeeperId)) {
+            throw new RuntimeException("Unauthorized access to update this booking !");
+        }
+        booking.setStatus(BookingStatus.COMPLETED);
         booking.setUpdatedAt(LocalDateTime.now());
         bookingRepository.save(booking);
         return modelMapper.map(booking, BookingDto.class);
     }
 
     @Override
-    public BookingDto completeBooking(Long bookingId, Long shopkeeperId) {
-        return updateBookingStatus(bookingId, BookingStatus.COMPLETED, shopkeeperId);
+    public BookingDto cancelBooking(Long bookingId, Long userId) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+        if (!booking.getUser().getId().equals(userId) && !booking.getShopkeeper().getId().equals(userId)) {
+            throw new RuntimeException("Unauthorized access to cancel this booking!");
+        }
+
+
+        if(booking.getUser().getId().equals(userId)) {
+            booking.setStatus(BookingStatus.CANCELED_BY_USER);
+            emailService.sendBookingCancellationEmail(booking.getUser().getEmail(), "USER");
+        }
+
+        else if(booking.getShopkeeper().getId().equals(userId)) {
+            booking.setStatus(BookingStatus.CANCELED_BY_SHOPKEEPER);
+            emailService.sendBookingCancellationEmail(booking.getShopkeeper().getEmail(), "SHOPKEEPER");
+        }
+
+        bookingRepository.save(booking);
+        return modelMapper.map(booking, BookingDto.class);
     }
+
+
 }
