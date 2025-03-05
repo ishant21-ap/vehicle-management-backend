@@ -40,7 +40,7 @@ public class BookingServiceImpl implements BookingService {
 
 
     @Override
-    public BookingDto createBooking(Long userId, Long vehicleId, LocalDate startDate, LocalDate endDate) {
+    public BookingDto createBooking(Long userId, Long vehicleId, LocalDate startDate, LocalDate endDate,String name, String phoneNo) {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new ResourceNotFoundException("User", "id", userId));
         Vehicle vehicle = vehicleRepository.findById(vehicleId)
@@ -53,6 +53,8 @@ public class BookingServiceImpl implements BookingService {
                 .vehicle(vehicle)
                 .shopkeeper(shopkeeper)
                 .status(BookingStatus.PENDING)
+                .name(name)
+                .phoneNo(phoneNo)
                 .startDate(startDate)
                 .endDate(endDate)
                 .totalPrice(totalPrice)

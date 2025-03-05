@@ -13,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 public class VehicleDto {
 
+    private Long id;
     private String name;
     private String brand;
     private String model;

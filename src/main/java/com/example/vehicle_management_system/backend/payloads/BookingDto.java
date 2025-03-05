@@ -21,6 +21,11 @@ public class BookingDto {
     private Long shopkeeperId;
     private BookingStatus status;
 
+    private String name;
+    private String phoneNo;
+
+
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate startDate;
 

@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -15,19 +15,20 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
 @EnableWebMvc
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
     @Autowired
     private JwtAuthenticationEntryPoint point;
-
 
     @Autowired
     private JwtAuthenticationFilter filter;
@@ -38,32 +39,43 @@ public class SecurityConfig {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable()) // CSRF disabled because JWT is used for stateless authentication
+        http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // ✅ Corrected
+                .csrf(csrf -> csrf.disable()) //Disable CSRF for stateless JWT authentication
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/api/users/login",
                                 "/api/verify/**",
                                 "/api/users/register",
                                 "/api/users/verifyOtp"
+//                                "/api/bookings"
                         ).permitAll()
-                        .requestMatchers(HttpMethod.GET).permitAll() // Allow all GET requests
-                        .anyRequest().authenticated() // All other requests require authentication
+                        .requestMatchers(HttpMethod.GET).permitAll()
+                        .anyRequest().authenticated()
                 )
-                .exceptionHandling(ex -> ex.authenticationEntryPoint(point)) // Handle unauthorized access
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)); // Stateless session management
+                .exceptionHandling(ex -> ex.authenticationEntryPoint(point))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-        // Add JWT filter before Spring Security's UsernamePasswordAuthenticationFilter
         http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
+    // ✅ Fixed: Added the missing CORS configuration method
+    @Bean
+    public UrlBasedCorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOriginPatterns(List.of("*")); // ✅ Fixes allowCredentials issue
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true); // ✅ Needed for Authorization headers & cookies
 
-
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
@@ -72,8 +84,4 @@ public class SecurityConfig {
         authenticationProvider.setPasswordEncoder(passwordEncoder);
         return authenticationProvider;
     }
-
-
-
-
 }

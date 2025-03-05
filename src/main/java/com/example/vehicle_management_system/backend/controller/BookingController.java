@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/bookings")
-@CrossOrigin("*")
+@CrossOrigin(origins = "*")
 public class BookingController {
 
     @Autowired
@@ -25,8 +25,10 @@ public class BookingController {
             @RequestParam Long userId,
             @RequestParam Long vehicleId,
             @RequestParam String startDate,
-            @RequestParam String endDate) {
-        BookingDto bookingDto = bookingService.createBooking(userId, vehicleId, LocalDate.parse(startDate), LocalDate.parse(endDate));
+            @RequestParam String endDate,
+            @RequestParam String name,
+            @RequestParam String phoneNo) {
+        BookingDto bookingDto = bookingService.createBooking(userId, vehicleId, LocalDate.parse(startDate), LocalDate.parse(endDate), name, phoneNo);
         return new ResponseEntity<>(bookingDto, HttpStatus.CREATED);
 
     }

@@ -30,6 +30,10 @@ public class Booking {
     private Vehicle vehicle;    //The vehicle being booked
 
 
+
+    private String name;
+    private String phoneNo;
+
     @ManyToOne
     @JoinColumn(name = "shopkeeper_id", nullable = false)
     private User shopkeeper;    //The owner of the vehicle

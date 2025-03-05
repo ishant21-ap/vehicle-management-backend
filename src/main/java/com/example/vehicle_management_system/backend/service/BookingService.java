@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface BookingService {
 
-    BookingDto createBooking(Long userId, Long vehicleId, LocalDate startDate, LocalDate endDate);
+    BookingDto createBooking(Long userId, Long vehicleId, LocalDate startDate, LocalDate endDate, String name, String phoneNo);
     List<BookingDto> getUserBookings(Long userId);
     List<BookingDto> getPendingBookingsForShopkeeper(Long shopkeeperId);
     BookingDto confirmBooking(Long bookingId, Long shopkeeperId);
